@@ -31,6 +31,12 @@ class InjvmExporter<T> extends AbstractExporter<T> {
 
     private final Map<String, Exporter<?>> exporterMap;
 
+    /**
+     *
+     * @param invoker
+     * @param key
+     * @param exporterMap
+     */
     InjvmExporter(Invoker<T> invoker, String key, Map<String, Exporter<?>> exporterMap) {
         super(invoker);
         this.key = key;

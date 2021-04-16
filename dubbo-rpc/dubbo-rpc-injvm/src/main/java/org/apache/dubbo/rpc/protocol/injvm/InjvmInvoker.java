@@ -34,6 +34,7 @@ class InjvmInvoker<T> extends AbstractInvoker<T> {
 
     private final String key;
 
+    //每个Invoker找那个存储了需要暴露的接口 exporters
     private final Map<String, Exporter<?>> exporterMap;
 
     InjvmInvoker(Class<T> type, URL url, String key, Map<String, Exporter<?>> exporterMap) {

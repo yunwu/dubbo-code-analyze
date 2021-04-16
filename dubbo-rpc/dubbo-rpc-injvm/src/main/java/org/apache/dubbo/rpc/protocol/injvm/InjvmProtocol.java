@@ -45,12 +45,18 @@ public class InjvmProtocol extends AbstractProtocol implements Protocol {
 
     public static InjvmProtocol getInjvmProtocol() {
         if (INSTANCE == null) {
-            //通过SPI模式加载vmProtocol
+            //通过SPI模式加载jvmProtocol
             ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(InjvmProtocol.NAME); // load
         }
         return INSTANCE;
     }
 
+    /**
+     * Map<String, Exporter<?>> map 中存储的数据是 serviceKey, Exporter
+     * @param map 存储在对应的Invoker实现类中
+     * @param key
+     * @return
+     */
     static Exporter<?> getExporter(Map<String, Exporter<?>> map, URL key) {
         Exporter<?> result = null;
 

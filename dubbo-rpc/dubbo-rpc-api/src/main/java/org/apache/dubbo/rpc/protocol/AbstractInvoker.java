@@ -53,6 +53,9 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
      */
     private final Map<String, String> attachment;
 
+    /**
+     * 当Invoker创建出来的时候available 默认是true，也就是当前Invoker是可用的
+     */
     private volatile boolean available = true;
 
     private AtomicBoolean destroyed = new AtomicBoolean(false);
@@ -110,6 +113,9 @@ public abstract class AbstractInvoker<T> implements Invoker<T> {
         this.available = available;
     }
 
+    /**
+     * 当Invoker destroy 时会设置available字段为 false
+     */
     @Override
     public void destroy() {
         if (!destroyed.compareAndSet(false, true)) {
