@@ -30,31 +30,53 @@ import com.alibaba.dubbo.rpc.service.EchoService;
  */
 public abstract class AbstractProxyFactory implements ProxyFactory {
 
+    /**
+     * 不采用泛化方式生成真实服务的代理
+     * @param invoker
+     * @param <T>
+     * @return
+     * @throws RpcException
+     */
     @Override
     public <T> T getProxy(Invoker<T> invoker) throws RpcException {
         return getProxy(invoker, false);
     }
 
+    /**
+     * 采用泛化方式生成真实服务的代理
+     * @param invoker
+     * @param generic
+     * @param <T>
+     * @return
+     * @throws RpcException
+     */
     @Override
     public <T> T getProxy(Invoker<T> invoker, boolean generic) throws RpcException {
         Class<?>[] interfaces = null;
+        //获取url中的interface属性
         String config = invoker.getUrl().getParameter(Constants.INTERFACES);
         if (config != null && config.length() > 0) {
+            //将得到的interface用","分隔
             String[] types = Constants.COMMA_SPLIT_PATTERN.split(config);
             if (types != null && types.length > 0) {
                 interfaces = new Class<?>[types.length + 2];
+                //设置接口类
                 interfaces[0] = invoker.getInterface();
+                //TODO 为什么要设置一个这么一个类，有什么作用？？
                 interfaces[1] = EchoService.class;
+                //TODO 遍历types， 加载type 类，type到底是啥？？？
                 for (int i = 0; i < types.length; i++) {
                     // TODO can we load successfully for a different classloader?.
                     interfaces[i + 2] = ReflectUtils.forName(types[i]);
                 }
             }
         }
+        //如果URL中无法获取interface，则做初始化处理
         if (interfaces == null) {
             interfaces = new Class<?>[]{invoker.getInterface(), EchoService.class};
         }
 
+        //如果采用泛化， 在interfaces中加入GenericService元素
         if (!GenericService.class.isAssignableFrom(invoker.getInterface()) && generic) {
             int len = interfaces.length;
             Class<?>[] temp = interfaces;
@@ -63,9 +85,11 @@ public abstract class AbstractProxyFactory implements ProxyFactory {
             interfaces[len] = com.alibaba.dubbo.rpc.service.GenericService.class;
         }
 
+        //根据实现类调用真是的方法
         return getProxy(invoker, interfaces);
     }
 
+    //具体的实现类去实现该方法， 两种方式： jdK动态代理， javaAssistant 代理
     public abstract <T> T getProxy(Invoker<T> invoker, Class<?>[] types);
 
 }

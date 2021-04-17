@@ -29,7 +29,7 @@ public interface ProxyFactory {
 
     /**
      * create proxy.
-     * 给Invoker创建代理
+     * 给Invoker创建代理，调用skeleton, 生成真实服务的代理
      * @param invoker
      * @return proxy
      */
@@ -38,7 +38,7 @@ public interface ProxyFactory {
 
     /**
      * create proxy.
-     * 给泛化的Invoker创建代理
+     * 给泛化的Invoker创建代理， 调用skeleton, 生成真实服务的代理
      * @param invoker
      * @return proxy
      */
@@ -47,7 +47,7 @@ public interface ProxyFactory {
 
     /**
      * create invoker.
-     *
+     * 将本地服务暴露出去之前需要先生成Invoker
      * @param <T>
      * @param proxy
      * @param type

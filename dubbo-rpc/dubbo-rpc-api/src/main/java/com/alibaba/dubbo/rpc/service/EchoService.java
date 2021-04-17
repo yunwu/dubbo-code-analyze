@@ -17,6 +17,9 @@
 
 package com.alibaba.dubbo.rpc.service;
 
+/**
+ * TODO 用于反射的？？
+ */
 @Deprecated
 public interface EchoService extends org.apache.dubbo.rpc.service.EchoService {
 }

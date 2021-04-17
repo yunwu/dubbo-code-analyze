@@ -58,6 +58,7 @@ public class GenericServiceTest {
 
         GenericService client = (GenericService) proxyFactory.getProxy(invoker, true);
         Object result = client.$invoke("sayHello", new String[]{"java.lang.String"}, new Object[]{"haha"});
+        System.out.println(result.toString());
         Assert.assertEquals("hello haha", result);
 
         org.apache.dubbo.rpc.service.GenericService newClient = (org.apache.dubbo.rpc.service.GenericService) proxyFactory.getProxy(invoker, true);
@@ -236,6 +237,11 @@ public class GenericServiceTest {
         result.put("innerObject3", new Map[]{innerObject3Tmp1, innerObject3Tmp2, innerObject3Tmp3});
 
         return result;
+    }
+
+    @Test
+    public void testName(){
+        System.out.println("sayHello".substring(3,4));
     }
 
     Map<String, Object> bean2Map(ComplexObject complexObject) {

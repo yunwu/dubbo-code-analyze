@@ -96,22 +96,70 @@ public class ExtensionLoader<T> {
      */
     private final ExtensionFactory objectFactory;
 
-
+    /**
+     * 缓存当前的SPI类的具体实现类的名字
+     * 例如： InJvmProtocol.class, injvm
+     */
     private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>();
 
+    /**
+     * 缓存当前的SPI类的具体实现类的名字
+     * 例如： injvm, InJvmProtocol.class
+     */
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();
 
+    /**
+     * 当前type 的自适应实现类单独存储，为啥？？
+     */
     private final Map<String, Object> cachedActivates = new ConcurrentHashMap<String, Object>();
-    private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
-    private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();
-    private volatile Class<?> cachedAdaptiveClass = null;
-    private String cachedDefaultName;
-    private volatile Throwable createAdaptiveInstanceError;
 
+    /**
+     * 当前extensionLoader缓存的所有的instance，比如 inJvm, 持有InjvmProtocol对象的holder
+     */
+    private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
+
+    /**
+     * 缓存持有adaptiveInstance的holder
+     */
+    private final Holder<Object> cachedAdaptiveInstance = new Holder<Object>();
+
+    /**
+     * 当前extensionLoader缓存的AdaptiveClass
+     */
+    private volatile Class<?> cachedAdaptiveClass = null;
+
+    /**
+     * 默认实现类，比如protocol的默认名是dubbo, 所以Protocol的extensionLoader的该属性是dubbo
+     */
+    private String cachedDefaultName;
+
+    /**
+     * 包装错误
+     */
+    private volatile Throwable createAdaptiveInstanceError;
+    /**
+     * TODO 缓存wrapperClass,为啥？？？？
+     * 当前type的实现类如果是wrapperClass 的时候才会存储下来，例如ProtocolFilterWrapper， ProtocolListenerWrapper
+     */
     private Set<Class<?>> cachedWrapperClasses;
 
+    /**
+     * 保存当前type的异常
+     */
     private Map<String, IllegalStateException> exceptions = new ConcurrentHashMap<String, IllegalStateException>();
 
+    /**
+     * ExtensionLoader构造器，SPI标记的类
+     * 如果当前type是ExtensionFactory，则objectFactory = null
+     * 否则，设置SPI类的ExtensionFactory
+     * 设置ExtensionFactory流程如下：
+     * 1. 查询缓存中是否存在ExtensionFactory，
+     * 2.如果不存在，则创建ExtensionFactory的ExtensionLoader,
+     * 并将extensionLoader缓存到EXTENSION_LOADERS中并且将获取当前的AdaptiveExtension
+     * 3.如果存在，则从缓存中直接获取
+     *
+     * @param type
+     */
     private ExtensionLoader(Class<?> type) {
         this.type = type;
         objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
@@ -164,6 +212,7 @@ public class ExtensionLoader<T> {
         return ClassHelper.getClassLoader(ExtensionLoader.class);
     }
 
+    //在别的地方需要根据extension来获取 extension的name,
     public String getExtensionName(T extensionInstance) {
         return getExtensionName(extensionInstance.getClass());
     }
@@ -491,6 +540,10 @@ public class ExtensionLoader<T> {
 
     @SuppressWarnings("unchecked")
     public T getAdaptiveExtension() {
+        /**
+         * 先去缓存中获取当前type的adaptive实例
+         * 下面的模式类似于单例模式的双重校验法
+         */
         Object instance = cachedAdaptiveInstance.get();
         if (instance == null) {
             if (createAdaptiveInstanceError == null) {
@@ -498,7 +551,10 @@ public class ExtensionLoader<T> {
                     instance = cachedAdaptiveInstance.get();
                     if (instance == null) {
                         try {
+                            //如果缓存中没有去创建，并缓存起来
+                            //创建的Extension可能需要注入数据，所以下面的创建过程中包含注入对象
                             instance = createAdaptiveExtension();
+
                             cachedAdaptiveInstance.set(instance);
                         } catch (Throwable t) {
                             createAdaptiveInstanceError = t;
@@ -597,9 +653,14 @@ public class ExtensionLoader<T> {
                             continue;
                         }
                         try {
+                            //获取属性名字并把第一个字母变成小写， 例如 setSayHello, 操作完之后，为sayHello
+                            //TODO 暂时没有看到具有set的类，等看到补充过来
                             String property = method.getName().length() > 3 ? method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4) : "";
+
+                            //通过ExtensionFactory获取Extension， 这里具体的ExtensionFactory的实现类是SpiExtensionFactory
                             Object object = objectFactory.getExtension(pt, property);
                             if (object != null) {
+                                //注入过程
                                 method.invoke(instance, object);
                             }
                         } catch (Exception e) {
@@ -809,8 +870,15 @@ public class ExtensionLoader<T> {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * 查找adaptiveExtensionClass, 并返回该实例
+     */
     private T createAdaptiveExtension() {
         try {
+            /**
+             * 1.先查找当前ExtensionLoader的adaptiveExtension类， 然后调用instance创建该类的实例
+             * 2.注入Extension: injectExtension
+             */
             return injectExtension((T) getAdaptiveExtensionClass().newInstance());
         } catch (Exception e) {
             throw new IllegalStateException("Can not create adaptive extension " + type + ", cause: " + e.getMessage(), e);

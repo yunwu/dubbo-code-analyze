@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 
 /**
  * Provide helpful information for {@link ExtensionLoader} to inject dependency extension instance.
- *
+ *  TODO 自适应标签，是如何使用，如何处理的？？？？？？
  * @see ExtensionLoader
  * @see URL
  */
