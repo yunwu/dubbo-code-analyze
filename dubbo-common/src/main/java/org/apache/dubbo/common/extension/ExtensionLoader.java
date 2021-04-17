@@ -62,23 +62,40 @@ public class ExtensionLoader<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
 
+    /******************************SPI 扩展类文件 开始********************************/
     private static final String SERVICES_DIRECTORY = "META-INF/services/";
 
     private static final String DUBBO_DIRECTORY = "META-INF/dubbo/";
 
     private static final String DUBBO_INTERNAL_DIRECTORY = DUBBO_DIRECTORY + "internal/";
+    /******************************SPI 扩展类文件 结束********************************/
 
+    /**
+     * name分隔符， 用，分隔
+     */
     private static final Pattern NAME_SEPARATOR = Pattern.compile("\\s*[,]+\\s*");
 
+    /**
+     * 全局缓存 extensionLoader 每个扩展类都有一个extensionLoader，例如protocol
+     */
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
 
+    /**
+     * 全局缓存，主要缓存插件类，以及对应的实例，例如 InJvmProtocol.class, InJvmProtocol对象
+     */
     private static final ConcurrentMap<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<Class<?>, Object>();
 
-    // ==============================
 
+    /**
+     * 需要扩展的SPI，比如Protocol.class
+     */
     private final Class<?> type;
 
+    /**
+     * 当前ExtensionLoader持有的ExtensionFactory
+     */
     private final ExtensionFactory objectFactory;
+
 
     private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<Class<?>, String>();
 
