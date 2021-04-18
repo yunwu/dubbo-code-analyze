@@ -248,7 +248,10 @@ public class ExtensionLoader<T> {
 
     /**
      * This is equivalent to {@code getActivateExtension(url, url.getParameter(key).split(","), null)}
-     *
+     * 根据url 适配插件，如果参数中含有需要匹配插件的值，以及分组的值
+     *  例如： url: "test://localhost/test?ext=order1,default"
+     *  .getActivateExtension(url, "ext", "default_group");
+     *  根据参数
      * @param url   url
      * @param key   url parameter key which used to get extension point names
      * @param group group
@@ -256,6 +259,12 @@ public class ExtensionLoader<T> {
      * @see #getActivateExtension(org.apache.dubbo.common.URL, String[], String)
      */
     public List<T> getActivateExtension(URL url, String key, String group) {
+        /**
+         * 根据url 适配插件，如果参数中含有需要匹配插件的值，以及分组的值
+         * 例如： url: "test://localhost/test?ext=order1,default"
+         * 1. 去根据group过滤找到扩展类
+         * 2.根据 key 去过滤，找到符合条件的扩展类，PS，根据key过滤的符合的扩展类加在列表最前面
+         */
         String value = url.getParameter(key);
         return getActivateExtension(url, value == null || value.length() == 0 ? null : Constants.COMMA_SPLIT_PATTERN.split(value), group);
     }
@@ -274,6 +283,7 @@ public class ExtensionLoader<T> {
         List<String> names = values == null ? new ArrayList<String>(0) : Arrays.asList(values);
         if (!names.contains(Constants.REMOVE_VALUE_PREFIX + Constants.DEFAULT_KEY)) {
             getExtensionClasses();
+            //遍历缓存中所有activate的实现类是否包含group,如果包含，将group加进去
             for (Map.Entry<String, Object> entry : cachedActivates.entrySet()) {
                 String name = entry.getKey();
                 Object activate = entry.getValue();
@@ -301,12 +311,14 @@ public class ExtensionLoader<T> {
             Collections.sort(exts, ActivateComparator.COMPARATOR);
         }
         List<T> usrs = new ArrayList<T>();
+        //在遍历需要处理的参数，根据names，所有非default name , 加入到最终的扩展中
         for (int i = 0; i < names.size(); i++) {
             String name = names.get(i);
             if (!name.startsWith(Constants.REMOVE_VALUE_PREFIX)
                     && !names.contains(Constants.REMOVE_VALUE_PREFIX + name)) {
                 if (Constants.DEFAULT_KEY.equals(name)) {
                     if (!usrs.isEmpty()) {
+                        //所有参数给定的符合条件的扩展是加载列表最前面的
                         exts.addAll(0, usrs);
                         usrs.clear();
                     }
@@ -876,6 +888,7 @@ public class ExtensionLoader<T> {
     private T createAdaptiveExtension() {
         try {
             /**
+             * PS： AdaptiveExtension 就是类上含有@Adaptive注解
              * 1.先查找当前ExtensionLoader的adaptiveExtension类， 然后调用instance创建该类的实例
              * 2.注入Extension: injectExtension
              */
