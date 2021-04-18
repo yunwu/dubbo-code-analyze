@@ -28,6 +28,7 @@ import org.apache.dubbo.common.extension.SPI;
 public interface ProxyFactory {
 
     /**
+     * consumer
      * create proxy.
      * 给Invoker创建代理，调用skeleton, 生成真实服务的代理
      * @param invoker
@@ -37,6 +38,7 @@ public interface ProxyFactory {
     <T> T getProxy(Invoker<T> invoker) throws RpcException;
 
     /**
+     * consumer
      * create proxy.
      * 给泛化的Invoker创建代理， 调用skeleton, 生成真实服务的代理
      * @param invoker
@@ -46,12 +48,13 @@ public interface ProxyFactory {
     <T> T getProxy(Invoker<T> invoker, boolean generic) throws RpcException;
 
     /**
+     * provider
      * create invoker.
      * 将本地服务暴露出去之前需要先生成Invoker
      * @param <T>
-     * @param proxy
-     * @param type
-     * @param url
+     * @param proxy 代理对象，比如DemoServiceImpl.newInstance
+     * @param type 代理对象的类型， 例如DemoService.class
+     * @param url  接口地址： dubbo://127.0.0.1:5342/com.test.DemoService?version=1.0.0
      * @return invoker
      */
     @Adaptive({Constants.PROXY_KEY})

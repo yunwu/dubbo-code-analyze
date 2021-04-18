@@ -624,7 +624,7 @@ public class ExtensionLoader<T> {
             /**
              * 如果当前是包装类即wrapperClass，则直接执行注入方式
              * 如果当前类不是包装类则查看该类缓存的wrapperclass，进行迭代注入。这相当于注入依赖对象
-             * TODO 仔细研究研究一下如何初始化cachedWrapperClasses数据的
+             * 最后找到包装类，然后将当前的instance注入进去，返回包装类
              */
             injectExtension(instance);
             Set<Class<?>> wrapperClasses = cachedWrapperClasses;
@@ -861,6 +861,11 @@ public class ExtensionLoader<T> {
 
     private boolean isWrapperClass(Class<?> clazz) {
         try {
+            //
+            /**
+             * 1.获取到clazz的构造器,需要参数type
+             * 例如： StubProxyFactoryWrapper 构造器需要 ProtocolFactory 类型参数
+             */
             clazz.getConstructor(type);
             return true;
         } catch (NoSuchMethodException e) {

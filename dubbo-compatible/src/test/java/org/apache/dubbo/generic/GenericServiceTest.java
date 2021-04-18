@@ -47,12 +47,20 @@ import java.util.Set;
 
 public class GenericServiceTest {
 
+
     @Test
     public void testGeneric() {
         DemoService server = new DemoServiceImpl();
+        //1. 通过字节码技术生成ProxyFactory$Adaptive 类
         ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
         Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
         URL url = URL.valueOf("dubbo://127.0.0.1:5342/" + DemoService.class.getName() + "?version=1.0.0");
+        /**
+         * 1.执行通过字节码技术生成ProxyFactory$Adaptive.getInvoker()
+         * 2.上面会先去获取Extension： org.apache.dubbo.rpc.ProxyFactory extension = (org.apache.dubbo.rpc.ProxyFactory) ExtensionLoader.getExtensionLoader(org.apache.dubbo.rpc.ProxyFactory.class).getExtension(extName);
+         * 拿到的extension是 javassist的包装类StubProxyFactoryWrapper
+         * 3.执行StubProxyFactoryWrapper.getInvoker()
+         */
         Exporter<DemoService> exporter = protocol.export(proxyFactory.getInvoker(server, DemoService.class, url));
         Invoker<DemoService> invoker = protocol.refer(DemoService.class, url);
 
