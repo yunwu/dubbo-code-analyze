@@ -114,6 +114,8 @@ public class Exchangers {
         return getExchanger(type);
     }
 
+    //延迟加载exchanger, 目前看到已经实现的exchanger只有HeaderExchanger，
+    // TODO 是否有其他的还需要确认一下
     public static Exchanger getExchanger(String type) {
         return ExtensionLoader.getExtensionLoader(Exchanger.class).getExtension(type);
     }

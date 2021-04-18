@@ -64,7 +64,9 @@ public class PerformanceServerTest extends TestCase {
         final String transporter = PerformanceUtils.getProperty(Constants.TRANSPORTER_KEY, Constants.DEFAULT_TRANSPORTER);
         final String serialization = PerformanceUtils.getProperty(Constants.SERIALIZATION_KEY, Constants.DEFAULT_REMOTING_SERIALIZATION);
         final String threadpool = PerformanceUtils.getProperty(Constants.THREADPOOL_KEY, Constants.DEFAULT_THREADPOOL);
+       //默认200 threads
         final int threads = PerformanceUtils.getIntProperty(Constants.THREADS_KEY, Constants.DEFAULT_THREADS);
+        //可以自己设置，也可以使用默认设置：默认设置是当前机器CPU核数， 最大32
         final int iothreads = PerformanceUtils.getIntProperty(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS);
         final int buffer = PerformanceUtils.getIntProperty(Constants.BUFFER_KEY, Constants.DEFAULT_BUFFER_SIZE);
         final String channelHandler = PerformanceUtils.getProperty(Constants.DISPATCHER_KEY, ExecutionDispatcher.NAME);

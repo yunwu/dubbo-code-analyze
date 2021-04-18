@@ -53,6 +53,7 @@ public class TelnetHandlerAdapter extends ChannelHandlerAdapter implements Telne
             if (extensionLoader.hasExtension(command)) {
                 if (commandEnabled(channel.getUrl(), command)) {
                     try {
+                        //调用具体的TelnetHandler
                         String result = extensionLoader.getExtension(command).telnet(channel, message);
                         if (result == null) {
                             return null;

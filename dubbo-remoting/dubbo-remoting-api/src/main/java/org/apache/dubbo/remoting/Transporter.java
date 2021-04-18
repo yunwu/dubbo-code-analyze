@@ -34,7 +34,7 @@ public interface Transporter {
 
     /**
      * Bind a server.
-     *
+     * server端 绑定server
      * @param url     server url
      * @param handler
      * @return server
@@ -46,7 +46,7 @@ public interface Transporter {
 
     /**
      * Connect to a server.
-     *
+     * client 端 连接server
      * @param url     server url
      * @param handler
      * @return client

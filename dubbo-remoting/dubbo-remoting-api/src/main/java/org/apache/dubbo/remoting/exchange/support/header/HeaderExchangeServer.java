@@ -52,6 +52,7 @@ public class HeaderExchangeServer implements ExchangeServer {
     private int heartbeatTimeout;
     private AtomicBoolean closed = new AtomicBoolean(false);
 
+    //自定义的心跳计时器
     private HashedWheelTimer heartbeatTimer;
 
     public HeaderExchangeServer(Server server) {

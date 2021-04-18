@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * ExchangeHandlerDispatcher
+ * ExchangeHandler 分配器
  */
 public class ExchangeHandlerDispatcher implements ExchangeHandler {
 
