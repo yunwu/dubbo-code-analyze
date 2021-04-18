@@ -38,9 +38,11 @@ public abstract class AbstractProtocol implements Protocol {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    //每个protocol实例都会有一个缓存exporter的hashmap
     protected final Map<String, Exporter<?>> exporterMap = new ConcurrentHashMap<String, Exporter<?>>();
 
     //TODO SOFEREFENCE
+    //每个protocol缓存一个Invoker列表
     protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();
 
     protected static String serviceKey(URL url) {
@@ -49,10 +51,14 @@ public abstract class AbstractProtocol implements Protocol {
                 url.getParameter(Constants.GROUP_KEY));
     }
 
+    // serviceKey 组成： /serviceGroup/serviceNam/version
     protected static String serviceKey(int port, String serviceName, String serviceVersion, String serviceGroup) {
         return ProtocolUtils.serviceKey(port, serviceName, serviceVersion, serviceGroup);
     }
 
+    /**
+     * 销毁当前 protocol实例，需要清除invokers, exporters
+     */
     @Override
     public void destroy() {
         for (Invoker<?> invoker : invokers) {
