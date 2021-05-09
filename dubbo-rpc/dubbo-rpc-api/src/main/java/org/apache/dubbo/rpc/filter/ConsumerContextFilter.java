@@ -30,7 +30,7 @@ import org.apache.dubbo.rpc.RpcInvocation;
 /**
  * ConsumerContextFilter set current RpcContext with invoker,invocation, local host, remote host and port
  * for consumer invoker.It does it to make the requires info available to execution thread's RpcContext.
- *
+ * comsumer context下的默认使用
  * @see org.apache.dubbo.rpc.Filter
  * @see RpcContext
  */
@@ -39,6 +39,7 @@ public class ConsumerContextFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        //请求上下文处理
         RpcContext.getContext()
                 .setInvoker(invoker)
                 .setInvocation(invocation)
@@ -50,10 +51,12 @@ public class ConsumerContextFilter implements Filter {
         }
         try {
             // TODO should we clear server context?
+            //清理返回结果上下文
             RpcContext.removeServerContext();
             return invoker.invoke(invocation);
         } finally {
             // TODO removeContext? but we need to save future for RpcContext.getFuture() API. If clear attachments here, attachments will not available when postProcessResult is invoked.
+            //请求中的参数清理掉
             RpcContext.getContext().clearAttachments();
         }
     }

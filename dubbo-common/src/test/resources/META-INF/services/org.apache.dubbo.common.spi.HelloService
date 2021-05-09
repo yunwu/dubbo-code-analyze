@@ -1,0 +1,2 @@
+org.apache.dubbo.common.spi.ChinaHelloServiceImpl
+org.apache.dubbo.common.spi.AmericaHelloServiceImpl

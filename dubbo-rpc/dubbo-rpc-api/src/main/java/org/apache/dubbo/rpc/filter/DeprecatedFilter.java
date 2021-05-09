@@ -32,7 +32,7 @@ import java.util.Set;
 /**
  * DeprecatedFilter logs error message if a invoked method has been marked as deprecated. To check whether a method
  * is deprecated or not it looks for <b>deprecated</b> attribute value and consider it is deprecated it value is <b>true</b>
- *
+ *如果采用弃用的方法，会做日志标志 deprecated， 但是不影响服务调用
  * @see Filter
  */
 @Activate(group = Constants.CONSUMER, value = Constants.DEPRECATED_KEY)

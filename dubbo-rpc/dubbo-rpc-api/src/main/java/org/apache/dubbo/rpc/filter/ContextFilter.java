@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * ContextFilter set the provider RpcContext with invoker, invocation, local port it is using and host for
  * current execution thread.
- *
+ * provider侧的contextfilter
  * @see RpcContext
  */
 @Activate(group = Constants.PROVIDER, order = -10000)

@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * 流量限制filter
  * URL statistics. (API, Cached, ThreadSafe)
  *
  * @see org.apache.dubbo.rpc.filter.ActiveLimitFilter
@@ -39,10 +40,14 @@ public class RpcStatus {
     private final AtomicInteger active = new AtomicInteger();
     private final AtomicLong total = new AtomicLong();
     private final AtomicInteger failed = new AtomicInteger();
+    //总响应时间
     private final AtomicLong totalElapsed = new AtomicLong();
     private final AtomicLong failedElapsed = new AtomicLong();
+    //最大响应时间
     private final AtomicLong maxElapsed = new AtomicLong();
+    //请求失败最长响应时间
     private final AtomicLong failedMaxElapsed = new AtomicLong();
+    //请求成功最长响应时间
     private final AtomicLong succeededMaxElapsed = new AtomicLong();
 
     private RpcStatus() {
@@ -112,6 +117,7 @@ public class RpcStatus {
         max = (max <= 0) ? Integer.MAX_VALUE : max;
         RpcStatus appStatus = getStatus(url);
         RpcStatus methodStatus = getStatus(url, methodName);
+        //如果当前的访问量大于最大值时，则不通过
         if (methodStatus.active.incrementAndGet() > max) {
             methodStatus.active.decrementAndGet();
             return false;
@@ -133,6 +139,7 @@ public class RpcStatus {
 
     private static void endCount(RpcStatus status, long elapsed, boolean succeeded) {
         status.active.decrementAndGet();
+        //
         status.total.incrementAndGet();
         status.totalElapsed.addAndGet(elapsed);
         if (status.maxElapsed.get() < elapsed) {

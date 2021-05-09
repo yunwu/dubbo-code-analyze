@@ -119,6 +119,7 @@ public class FailbackClusterInvoker<T> extends AbstractClusterInvoker<T> {
         private final LoadBalance loadbalance;
         private final List<Invoker<T>> invokers;
         private final int retries;
+        //默认间隔5秒执行一次
         private final long tick;
         private Invoker<T> lastInvoker;
         private int retryTimes = 0;

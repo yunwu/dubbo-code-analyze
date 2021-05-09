@@ -45,7 +45,7 @@ public class ProtocolFilterWrapper implements Protocol {
     }
 
     /**
-     * InvokerChain, 在调用Invoker时，需要filter排序之后，倒叙进行filter.invoke方法
+     * InvokerChain, 在调用Invoker时，每个invoker.invoke方法，都是执行filter
      * @param invoker
      * @param key
      * @param group

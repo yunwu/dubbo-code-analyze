@@ -109,7 +109,7 @@ public class ExtensionLoader<T> {
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<Map<String, Class<?>>>();
 
     /**
-     * 当前type 的自适应实现类单独存储，为啥？？
+     * 当前type 的自适应实现类单独存储
      */
     private final Map<String, Object> cachedActivates = new ConcurrentHashMap<String, Object>();
 
@@ -138,8 +138,9 @@ public class ExtensionLoader<T> {
      */
     private volatile Throwable createAdaptiveInstanceError;
     /**
-     * TODO 缓存wrapperClass,为啥？？？？
      * 当前type的实现类如果是wrapperClass 的时候才会存储下来，例如ProtocolFilterWrapper， ProtocolListenerWrapper
+     * 一些扩展类，如果有包装类，则在获取extension时返回wrapper class
+     * 这样做的好处是，统一入口，相当于facade，后面做什么操作都不影响对接的点
      */
     private Set<Class<?>> cachedWrapperClasses;
 
@@ -304,6 +305,11 @@ public class ExtensionLoader<T> {
                     if (!names.contains(name)
                             && !names.contains(Constants.REMOVE_VALUE_PREFIX + name)
                             && isActive(activateValue, url)) {
+                        //active 工作原理：以filter链为例
+                        //isActive 判断url参数中是否带了filter参数，
+                        // 如果activateValue为空，则返回true
+                        //如果参数中含有activateValue在参数中，则返回true
+                        //其余返回false
                         exts.add(ext);
                     }
                 }

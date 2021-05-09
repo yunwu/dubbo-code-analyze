@@ -26,6 +26,7 @@ import org.apache.dubbo.rpc.RpcException;
 
 /**
  * Set the current execution thread class loader to service interface's class loader.
+ * 在执行exporter的给filter chain 时，需要设定Thread的ContextClassLoader???
  */
 @Activate(group = Constants.PROVIDER, order = -30000)
 public class ClassLoaderFilter implements Filter {

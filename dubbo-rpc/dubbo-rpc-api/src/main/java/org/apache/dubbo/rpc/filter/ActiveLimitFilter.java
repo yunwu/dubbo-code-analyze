@@ -36,6 +36,7 @@ import org.apache.dubbo.rpc.RpcStatus;
  *      will wait for configured timeout(default is 0 second) before invocation gets kill by dubbo.
  * </pre>
  *
+ * 并发限流filter
  * @see Filter
  */
 @Activate(group = Constants.CONSUMER, value = Constants.ACTIVES_KEY)
@@ -48,6 +49,7 @@ public class ActiveLimitFilter implements Filter {
         int max = invoker.getUrl().getMethodParameter(methodName, Constants.ACTIVES_KEY, 0);
         RpcStatus count = RpcStatus.getStatus(invoker.getUrl(), invocation.getMethodName());
         if (!RpcStatus.beginCount(url, methodName, max)) {
+            //获取过期时间，默认是0
             long timeout = invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.TIMEOUT_KEY, 0);
             long start = System.currentTimeMillis();
             long remain = timeout;

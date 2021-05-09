@@ -42,7 +42,7 @@ import java.lang.reflect.Type;
  *    3)If return value is other than above return value as it is.
  * </pre>
  *
- * @see Filter
+ * @see Filter 返回结果数据类型处理，json模式转map, vaule不是response type 则转换成pojo, 其它模式直接返回value
  *
  */
 public class CompatibleFilter implements Filter {

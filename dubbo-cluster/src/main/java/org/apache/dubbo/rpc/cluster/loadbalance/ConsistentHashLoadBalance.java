@@ -44,9 +44,13 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
     @Override
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
         String methodName = RpcUtils.getMethodName(invocation);
+        //service key
         String key = invokers.get(0).getUrl().getServiceKey() + "." + methodName;
+        //获取hashcode
         int identityHashCode = System.identityHashCode(invokers);
+        //获取selector
         ConsistentHashSelector<T> selector = (ConsistentHashSelector<T>) selectors.get(key);
+        //如果selector不存在或是存储的selector的hashcode与算出来的identityHashCode不一致，则重新存入select， 将hashcode更新成最新的hashcode
         if (selector == null || selector.identityHashCode != identityHashCode) {
             selectors.put(key, new ConsistentHashSelector<T>(invokers, methodName, identityHashCode));
             selector = (ConsistentHashSelector<T>) selectors.get(key);

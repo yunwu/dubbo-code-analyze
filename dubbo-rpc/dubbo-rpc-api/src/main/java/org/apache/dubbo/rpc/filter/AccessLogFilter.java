@@ -47,6 +47,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * accesslog 日志打印filter
+ * 根据accesslog参数的value去决定写入到哪个文件日志中
  * Record access log for the service.
  * <p>
  * Logger key is <code><b>dubbo.accesslog</b></code>.
@@ -75,6 +77,7 @@ public class AccessLogFilter implements Filter {
 
     private static final long LOG_OUTPUT_INTERVAL = 5000;
 
+    //通过logQueue的key作为文件名，写日志，如果文件命名不同，则创建多个日志文件
     private final ConcurrentMap<String, Set<String>> logQueue = new ConcurrentHashMap<String, Set<String>>();
 
     private final ScheduledExecutorService logScheduled = Executors.newScheduledThreadPool(2, new NamedThreadFactory("Dubbo-Access-Log", true));
@@ -85,6 +88,7 @@ public class AccessLogFilter implements Filter {
         if (logFuture == null) {
             synchronized (logScheduled) {
                 if (logFuture == null) {
+                    //5秒写一次
                     logFuture = logScheduled.scheduleWithFixedDelay(new LogTask(), LOG_OUTPUT_INTERVAL, LOG_OUTPUT_INTERVAL, TimeUnit.MILLISECONDS);
                 }
             }

@@ -27,6 +27,7 @@ import org.apache.dubbo.rpc.RpcResult;
 
 /**
  * Dubbo provided default Echo echo service, which is available for all dubbo provider service interface.
+ * 回响测试，用来检查服务是否正常，不做具体的逻辑处理
  */
 @Activate(group = Constants.PROVIDER, order = -110000)
 public class EchoFilter implements Filter {
